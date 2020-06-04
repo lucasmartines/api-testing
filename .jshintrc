@@ -1,0 +1,11 @@
+{
+    "undef": true,
+    "unused": true,
+    "globals": {
+      "MY_GLOBAL": true
+    },
+    "esnext": true,
+    "quotmark": true,
+    "node":true,
+    "asi": true
+  }

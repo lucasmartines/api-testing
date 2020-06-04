@@ -11,7 +11,7 @@ let URL_CONNECTION = process.env.DB_URL || 'mongodb://localhost/carrosApiLocal'
 /**
  * ## set the url of database to url in env, so i can teste the database
  */
-if( /test/.test( process.env.NODE_ENV ) ){
+if( /test/i.test( process.env.NODE_ENV ) ){
     URL_CONNECTION = process.env.DATABASE_URL_TEST
 
     console.log('___TESTING MODE IN DATABASE____')

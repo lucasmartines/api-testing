@@ -1,0 +1,10 @@
+language: node_js
+node_js:
+  - 12
+before_script:
+  - npm i -g jest
+script:
+  jest
+cache: npm
+env: 
+  - NODE_ENV=TEST

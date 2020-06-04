@@ -27,6 +27,21 @@ afterAll(()=>{
 
 describe('Test of route[GET]: /api/v1/carros ', function( ) 
 {
+
+    it('shoud return a list of 2 cars', async function(){
+
+        await car_generator()
+        await car_generator()
+        
+        const res = await request( app )
+            .get(URL_TEMPLATE)
+            .expect('Content-Type',/json/)
+            .expect(200)
+            
+        let qtd_cars = res.body.length;
+
+        expect(qtd_cars).toEqual(2)
+    })
     it('endpoint /api/v1/carros must be online and return 200', async function(){
 
         const res = await request( app ).get( URL_TEMPLATE )

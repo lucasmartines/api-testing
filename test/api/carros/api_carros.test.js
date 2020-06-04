@@ -34,6 +34,7 @@ afterAll(async()=>{
 })
 
 
+
 describe('Test of route[GET]: /api/v1/carros ', function( ) 
 {
 
@@ -80,6 +81,42 @@ describe('Test of route[GET]: /api/v1/carros ', function( )
     })
 })
 
+describe("Testing route [GET] /api/v1/carros/{some-car} to get one car", async () => {
+
+
+    it('shoud return one car if user pass id param', async()=>{
+
+        let car = await car_generator()
+        
+        let carFound = false
+        
+        res = await request(app)
+            .get(`${URL_TEMPLATE}/${car._id}`)
+            .expect('Content-Type',/json/)
+            .expect(200)
+
+            // console.log(res.body)
+        carFound = res.body 
+        
+        expect(carFound).toBeTruthy()
+
+    })
+
+    it('shoud return 400 error if user pass an incorrect id', async()=>{
+        await request(app)
+            .get(`${URL_TEMPLATE}/some_incorrect123`)
+            .expect('Content-Type',/json/)
+            .expect(400)
+    })
+
+    it('shoud return 404 error if user pass an id of an object that dont exists', async()=>{
+        const _id = mongoose.Types.ObjectId()
+        
+        await request(app)
+            .get(`${URL_TEMPLATE}/${_id}`)
+            .expect(404)
+    })
+})
 describe('Testing [POST] /api/v1/carros',()=>{
 
 

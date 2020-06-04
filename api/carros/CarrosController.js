@@ -14,6 +14,31 @@ carrosControllerV1.get('/',async function(req,res){
     res.json( carros )
 })
 
+carrosControllerV1.get('/:_id', async(req,res) => {
+
+    
+    
+    if(!isIdValid( req.params._id , res )) return
+    
+    
+    try{
+        let carro = await Cars.findById( req.params._id )
+        console.log("____________",carro)
+
+        if(carro == null){
+            
+            return res.status(404).send({message:"Erro Carro não encontrado"})
+        }
+        
+
+        res.json( carro )
+        
+    }
+    catch( e ){
+        return sendError(true,res,500,null,"Fail to connect with database")
+    }
+})
+
 
 carrosControllerV1.post('/',async function(req,res){
 
@@ -23,7 +48,7 @@ carrosControllerV1.post('/',async function(req,res){
         _cars = await Cars.create(req.body)
     }
     catch (e) {
-        return res.status(400).send( { error : "Error: Is not possible to get a car!"+ e  } )
+        return res.status(400).send( { error : "Error: Is not possible to get a car list!"+ e  } )
     }
 
     res.status(201).json( _cars )
@@ -72,11 +97,19 @@ carrosControllerV1.delete('/:_id',async function(req,res){
     })
 })
 
-function _sendErrorIdFalseOrNull(_id = false,res){
-    sendError(!_id,res,400,null,"Error: Is not possible to delete a car without id")
+function _sendErrorIdFalseOrNull(_id = false,res,msg = 'delete'){
+    sendError(!_id,res,400,null,"Error: Is not possible to " + msg + " a car without id")
     return
 }
-function sendError(err,res , code = 404, end,message){
+/**
+ * Maibe i consider transform it in a promise
+ * @param {*} err Err is an boolean that if is true show error
+ * @param {*} res is the response object
+ * @param {*} code is the code of response in http
+ * @param {*} end is a callback when it ends
+ * @param {*} message is your message that wil go to user
+ */
+function sendError(err,res , code = 404, end = null ,message){
     if(err){ 
         res.status(code).json({
             error:message + err

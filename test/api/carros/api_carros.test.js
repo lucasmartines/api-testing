@@ -2,13 +2,16 @@ const request = require('supertest')
 const app = require('../../../index')
 const Car = require('../../../models/carsModel')
 
-
 const URL_TEMPLATE = '/api/v1/carros'
-
-
 
 const resetDatabase = async _ => {
     await Car.deleteMany().exec()
+}
+
+const car_generator = async () => {
+    return await Car.create({
+        name: "Carro Legal"
+    })
 }
 
 beforeEach(()=>{
@@ -24,7 +27,6 @@ afterAll(()=>{
 
 describe('Test of route[GET]: /api/v1/carros ', function( ) 
 {
-    
     it('endpoint /api/v1/carros must be online and return 200', async function(){
 
         const res = await request( app ).get( URL_TEMPLATE )
@@ -41,6 +43,7 @@ describe('Test of route[GET]: /api/v1/carros ', function( )
     })
 
     it('shoud post to endpoint /api/v1/carros', async () => {
+
         const res = await request( app )
               .post( URL_TEMPLATE )
               .send({
@@ -49,15 +52,13 @@ describe('Test of route[GET]: /api/v1/carros ', function( )
               .expect('Content-Type',/json/)
               .expect(201)
     })
-
-    
-
 })
 
 describe('Testing [POST] /api/v1/carros',()=>{
 
 
     it('shoud return error if user dont send name in object', async () => {
+        
         const res = await request( app )
               .post( URL_TEMPLATE )
               .send({ })
@@ -69,6 +70,7 @@ describe('Testing [POST] /api/v1/carros',()=>{
     })
 
     it('shoud return error if user dont send name in object or send undefined', async () => {
+        
         const res = await request( app )
               .post( URL_TEMPLATE )
               .send(undefined)
@@ -79,7 +81,8 @@ describe('Testing [POST] /api/v1/carros',()=>{
     })
 
     it('shoud receive 201 status', async()=>{
-        const res = await request( app )
+
+        await request( app )
             .post( URL_TEMPLATE )
             .send({
                 name:"Super Carro Legal"
@@ -88,6 +91,7 @@ describe('Testing [POST] /api/v1/carros',()=>{
             .expect(201)
     })
     it('shoud receive the user that has been sent, with the post on /api/v1/carros', async()=>{
+        
         const {text,statusCode} = await request(app)
                 .post( URL_TEMPLATE )
                 .send({
@@ -103,7 +107,6 @@ describe('Testing [POST] /api/v1/carros',()=>{
 
     it('shoud register user in database, and check if he exists', async()=>{
        
-
         await request(app)
             .post( URL_TEMPLATE )
             .send({
@@ -114,24 +117,29 @@ describe('Testing [POST] /api/v1/carros',()=>{
         expect(car.length).toBeGreaterThan(0)
     })
 
+    it('should return 404 if user try to update a object that does not exists', async()=>{
+        const mongoose = require('mongoose')
+        let valid_id = mongoose.Types.ObjectId()
+
+        await request(app)
+            .put( `${URL_TEMPLATE}/${valid_id}` )
+            .send({
+                name:"Carro Legal"
+            }).expect(404)
+    })
+
 })
 
 describe('Testing [DELETE]',()=>{
 
-    let car = generator = async () => {
-        return await Car.create({
-            name: "Carro Legal"
-        })
-    }
+    
+    it(`shoud expect 200 when deleting a car route ${URL_TEMPLATE}/[param_id]`,async()=>{
 
-    it(`shoud user pass param to route ${URL_TEMPLATE}/[param_id]`,async()=>{
+        let car1 = await car_generator()
 
-        let car1 = await Car.create({
-            name: "Carro Legal"
-        })
-        
         await request(app)
             .delete( `${URL_TEMPLATE}/${car1._id}` )
+            .expect('Content-Type',/json/)
             .expect(200)
     })
 
@@ -147,51 +155,60 @@ describe('Testing [DELETE]',()=>{
 
     it('should check if car in database is deleted', async () => {
         
-        let car1 = await Car.create({
-            name: "Carro Legal"
-        })
-       
+        let car1 = await car_generator()
 
         await request(app)
             .delete( `${URL_TEMPLATE}/${car1._id}` )
             .expect(200)
-
         
         let carsInDb = await Car.count() 
 
         expect(carsInDb).toEqual(0)
-        
     })    
 })
 
 describe('Testing [PUT] request',()=>{
 
-    xit('shoud check if put is online',function(){
-
-        request(app)
-            .put(`${URL_TEMPLATE}/123`)
-            .then( function( err , res ) {
-                
-             
-                
-            })
-    })
-
+    
     it('shoud update car by passing some params to body',async function(){
-        let car1 = await Car.create({
-            name: "Carro Legal"
-        })
+        
+        let car1 = await car_generator()
         
         await request(app)
             .put(`${URL_TEMPLATE}/${car1._id}`)
+            .expect('Content-Type',/json/)
             .send({
                 name:"Carro Bacana"
             })
         
         let find_car = await Car.find({name:"Carro Bacana"}).exec()
-        
-
         expect(find_car[0].name).toEqual("Carro Bacana")
 
     })
+
+    it('should return 400 error with passing invalid id', async() => {
+        await request(app)
+            .put(`${URL_TEMPLATE}/invalid-param`)
+            .send({
+                name:"Carro Bacana"
+            })
+            .expect(400)
+    })
+
+    it('should return 400 if user pass null or false',async()=>{
+        await request(app)
+            .put(`${URL_TEMPLATE}/false`)
+            .send({
+                name:"Carro Bacana"
+            })
+            .expect(400)
+
+        await request(app)
+            .put(`${URL_TEMPLATE}/null`)
+            .send({
+                name:"Carro Bacana"
+            })
+            .expect(400)
+    })
+
 })

@@ -16,7 +16,6 @@ if( /test/i.test( process.env.NODE_ENV ) )
 {
     URL_CONNECTION = process.env.DATABASE_URL_TEST || URL_CONNECTION
     console.log('__________TESTING MODE IN DATABASE____________')
-
 }
 
 if(/prod/i.test(process.env.NODE_ENV)){

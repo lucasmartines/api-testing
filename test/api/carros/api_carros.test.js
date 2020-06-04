@@ -1,10 +1,17 @@
+// i dont know why dotenv dont start by itself in app.js in test mode
+// so i force it to reload here berore reloading all
+require('dotenv').config()
+
+
 const request = require('supertest')
-const app = require('../../../index')
+const app = require('../../../app')
+const URL_TEMPLATE = '/api/v1/carros'
+const mongoose = require('mongoose')
+
+
 const Car = require('../../../models/carsModel')
 
-const URL_TEMPLATE = '/api/v1/carros'
-
-const resetDatabase = async _ => {
+const resetDatabase = async () => {
     await Car.deleteMany().exec()
 }
 
@@ -14,14 +21,16 @@ const car_generator = async () => {
     })
 }
 
-beforeEach(()=>{
+beforeEach(async ()=>{
 
-    resetDatabase()
+    await resetDatabase()
 })
 
-afterAll(()=>{
+afterAll(async()=>{
 
-    resetDatabase()
+    await resetDatabase()
+    mongoose.connection.close()
+    
 })
 
 
@@ -55,6 +64,7 @@ describe('Test of route[GET]: /api/v1/carros ', function( )
             .set('Accept', 'application/json')
             .expect('Content-Type',/json/)
             .expect(200) 
+
     })
 
     it('shoud post to endpoint /api/v1/carros', async () => {
@@ -66,6 +76,7 @@ describe('Test of route[GET]: /api/v1/carros ', function( )
               })
               .expect('Content-Type',/json/)
               .expect(201)
+
     })
 })
 
@@ -91,7 +102,6 @@ describe('Testing [POST] /api/v1/carros',()=>{
               .expect('Content-Type',/json/)
               .expect(400)
         expect(res.error).toBeTruthy()
-
     })
 
     it('shoud receive 201 status', async()=>{
@@ -103,6 +113,7 @@ describe('Testing [POST] /api/v1/carros',()=>{
             })
             .expect('Content-Type',/json/)
             .expect(201)
+
     })
     it('shoud receive the user that has been sent, with the post on /api/v1/carros', async()=>{
         
@@ -129,6 +140,7 @@ describe('Testing [POST] /api/v1/carros',()=>{
         
         let car = await Car.find().exec()
         expect(car.length).toBeGreaterThan(0)
+
     })
 
     it('should return 404 if user try to update a object that does not exists', async()=>{
@@ -140,6 +152,7 @@ describe('Testing [POST] /api/v1/carros',()=>{
             .send({
                 name:"Carro Legal"
             }).expect(404)
+
     })
 
 })
@@ -207,6 +220,7 @@ describe('Testing [PUT] request',()=>{
                 name:"Carro Bacana"
             })
             .expect(400)
+
     })
 
     it('should return 400 if user pass null or false',async()=>{
@@ -217,12 +231,19 @@ describe('Testing [PUT] request',()=>{
             })
             .expect(400)
 
+    })
+
+    it('should return 400 if user pass null or false',async()=>{
+
         await request(app)
             .put(`${URL_TEMPLATE}/null`)
             .send({
                 name:"Carro Bacana"
             })
             .expect(400)
+
+
     })
+
 
 })

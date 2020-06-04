@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "SET NODE_ENV=development& nodemon index.js",
-    "test": "SET NODE_ENV=test & jest",
-    "testw": "SET NODE_ENV=test & jest --watchAll"
+    "test": "jest",
+    "test.dev": "jest ",
+    "test.dev.watch": "jest --watchAll"
   },
   "keywords": [],
   "author": "",

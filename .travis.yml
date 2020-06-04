@@ -6,5 +6,3 @@ before_script:
 script:
   jest
 cache: npm
-env: 
-  - NODE_ENV=TEST

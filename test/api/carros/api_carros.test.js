@@ -66,7 +66,6 @@ describe('Testing [POST] /api/v1/carros',()=>{
               .expect(400)
         
         expect(res.error).toBeTruthy()
-
     })
 
     it('shoud return error if user dont send name in object or send undefined', async () => {

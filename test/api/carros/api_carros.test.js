@@ -10,22 +10,24 @@ const mongoose = require('mongoose')
 
 
 const Car = require('../../../models/carsModel')
-
+/** clean database */
 const resetDatabase = async () => {
     await Car.deleteMany().exec()
 }
-
+/** create a car simple */
 const car_generator = async () => {
     return await Car.create({
         name: "Carro Legal"
     })
 }
 
+/** clean database before each test */
 beforeEach(async ()=>{
 
     await resetDatabase()
 })
 
+/** disconect fron database at end */
 afterAll(async()=>{
 
     await resetDatabase()
@@ -81,7 +83,7 @@ describe('Test of route[GET]: /api/v1/carros ', function( )
     })
 })
 
-describe("Testing route [GET] /api/v1/carros/{some-car} to get one car", async () => {
+describe("Testing route [GET] /api/v1/carros/{some-car} to get one car", () => {
 
 
     it('shoud return one car if user pass id param', async()=>{

@@ -18,15 +18,18 @@ if( /test/i.test( process.env.NODE_ENV ) )
     console.log('__________TESTING MODE IN DATABASE____________')
 }
 
+/**
+ * if production
+ */
 if(/prod/i.test(process.env.NODE_ENV)){
     URL_CONNECTION = process.env.DATABASE_URL_PRODUCTION || URL_CONNECTION
+    console.log('__URL DATABASE CONNECTION: ', URL_CONNECTION   )
 }
 
-console.log('____________URL CONNECTION: ', URL_CONNECTION   )
 
 try{
     mongoose.connect( URL_CONNECTION , config )
-    console.log("mongoose is online")
+    console.log("____________mongoose is online______________")
 }
 catch(e){
     console.log("Error with mongoose: " + e )

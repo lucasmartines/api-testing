@@ -7,7 +7,8 @@
     "dev": "SET NODE_ENV=development& nodemon index.js",
     "test": "jest",
     "test.dev": "jest ",
-    "test.dev.watch": "jest --watchAll"
+    "test.dev.watch": "jest --watchAll",
+    "start":"node index.js"
   },
   "keywords": [],
   "author": "",

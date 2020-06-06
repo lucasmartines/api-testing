@@ -3,9 +3,10 @@ const Cars = require('../../models/carsModel.js')
 const mongoose = require('mongoose')
 const carrosControllerV1 = express.Router()
 
-// console.log( process.env.NODE_ENV )
 
-const router = "/api/v1/carros"
+// configure route path
+    const router = "/api/v1/carros"
+
 
 carrosControllerV1.get('/',async function(req,res){
 
@@ -23,7 +24,7 @@ carrosControllerV1.get('/:_id', async(req,res) => {
     
     try{
         let carro = await Cars.findById( req.params._id )
-        console.log("____________",carro)
+
 
         if(carro == null){
             
